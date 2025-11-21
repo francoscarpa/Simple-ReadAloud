@@ -1,0 +1,26 @@
+{
+    "manifest_version": 3,
+    "name": "Simple ReadAloud",
+    "version": "1.2",
+    "description": "Reads text aloud on hover with selectable language and speed.",
+    "permissions": [
+        "storage"
+    ],
+    "action": {
+        "default_popup": "popup.html",
+        "default_icon": "icon.png"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "content.js"
+            ]
+        }
+    ],
+    "icons": {
+        "48": "icon.png"
+    }
+}
