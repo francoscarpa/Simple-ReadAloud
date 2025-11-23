@@ -13,10 +13,13 @@ chrome.storage.onChanged.addListener((changes, area) => {
     }
 });
 
+
 let cHeld = false;
 let hoverTimeout = null;
 let lastReadElement = null;
 let currentHoveredElement = null;
+
+let readAloudEnabled = true;
 
 function speak(text) {
     window.speechSynthesis.cancel();
@@ -33,13 +36,13 @@ function isTextElement(el) {
     return true;
 }
 
+
 function handleStartRead() {
-    if (!cHeld || !currentHoveredElement) return;
+    if (!readAloudEnabled || !cHeld || !currentHoveredElement) return;
     const text = currentHoveredElement.textContent.trim();
     lastReadElement = currentHoveredElement;
     speak(text);
 }
-
 document.addEventListener('keydown', (event) => {
     if (event.key.toLowerCase() === 'c' && !cHeld) {
         cHeld = true;
@@ -60,6 +63,8 @@ document.addEventListener('keyup', (event) => {
     }
 });
 
+
+
 document.body.addEventListener('mouseover', (event) => {
     let el = event.target;
     if (!isTextElement(el)) return;
@@ -73,6 +78,13 @@ document.body.addEventListener('mouseover', (event) => {
         hoverTimeout = setTimeout(handleStartRead, 10);
     }
 });
+// If you move the mouse while C/c is held, make sure to restart logic accordingly
+document.body.addEventListener('mousemove', (event) => {
+    // If C/c is held but you rapidly move across elements
+    // Forces mouseover/mouseout sequence most of the time, but can help with edge cases
+    if (!cHeld) return;
+    // No action needed here if mouseover/mouseout are firing appropriately
+});
 
 document.body.addEventListener('mouseout', (event) => {
     clearTimeout(hoverTimeout);
@@ -81,10 +93,16 @@ document.body.addEventListener('mouseout', (event) => {
     currentHoveredElement = null;
 });
 
-// If you move the mouse while C/c is held, make sure to restart logic accordingly
-document.body.addEventListener('mousemove', (event) => {
-    // If C/c is held but you rapidly move across elements
-    // Forces mouseover/mouseout sequence most of the time, but can help with edge cases
-    if (!cHeld) return;
-    // No action needed here if mouseover/mouseout are firing appropriately
+
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === 'toggleReadAloud') {
+        readAloudEnabled = !readAloudEnabled;
+        if (!readAloudEnabled) {
+            window.speechSynthesis.cancel();
+        }
+        sendResponse && sendResponse({ enabled: readAloudEnabled });
+    } else if (request.action === 'getReadAloudState') {
+        sendResponse && sendResponse({ enabled: readAloudEnabled });
+    }
 });
