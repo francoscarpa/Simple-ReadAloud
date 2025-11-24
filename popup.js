@@ -12,7 +12,7 @@ function updateToggleButton(enabled) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    let { language, rate } = await chrome.storage.local.get({ language: 'it-IT', rate: 1 });
+    let { language, rate } = await chrome.storage.local.get({ language: 'it-IT', rate: 2.4 });
     document.getElementById('language').value = language;
     document.getElementById('speed').value = rate;
     document.getElementById('speedValue').textContent = rate;

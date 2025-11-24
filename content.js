@@ -1,7 +1,7 @@
 let language = 'it-IT';
-let rate = 1.0;
+let rate = 2.4;
 
-chrome.storage.local.get({ language: 'it-IT', rate: 1 }, (data) => {
+chrome.storage.local.get({ language: 'it-IT', rate: 2.4 }, (data) => {
     language = data.language;
     rate = data.rate;
 });
@@ -13,12 +13,10 @@ chrome.storage.onChanged.addListener((changes, area) => {
     }
 });
 
-
 let cHeld = false;
 let hoverTimeout = null;
 let lastReadElement = null;
 let currentHoveredElement = null;
-
 let readAloudEnabled = true;
 
 function speak(text) {
@@ -31,11 +29,10 @@ function speak(text) {
 }
 
 function isTextElement(el) {
-    const skipTags = ['SCRIPT', 'STYLE', 'INPUT', 'TEXTAREA', 'BUTTON', 'SELECT', 'OPTION', 'IMG', 'SVG'];
+    const skipTags = ['SCRIPT', 'STYLE', 'IMG', 'SVG'];
     if (!el || skipTags.includes(el.tagName)) return false;
     return true;
 }
-
 
 function handleStartRead() {
     if (!readAloudEnabled || !cHeld || !currentHoveredElement) return;
@@ -43,13 +40,14 @@ function handleStartRead() {
     lastReadElement = currentHoveredElement;
     speak(text);
 }
+
 document.addEventListener('keydown', (event) => {
     if (event.key.toLowerCase() === 'c' && !cHeld) {
         cHeld = true;
         // If already hovering an element, start timer
         if (currentHoveredElement && isTextElement(currentHoveredElement)) {
             clearTimeout(hoverTimeout);
-            hoverTimeout = setTimeout(handleStartRead, 10);
+            hoverTimeout = setTimeout(handleStartRead, 1);
         }
     }
 });
@@ -63,8 +61,6 @@ document.addEventListener('keyup', (event) => {
     }
 });
 
-
-
 document.body.addEventListener('mouseover', (event) => {
     let el = event.target;
     if (!isTextElement(el)) return;
@@ -75,9 +71,10 @@ document.body.addEventListener('mouseover', (event) => {
 
     // Only act if C/c is currently held and not already reading this element
     if (cHeld && el !== lastReadElement) {
-        hoverTimeout = setTimeout(handleStartRead, 10);
+        hoverTimeout = setTimeout(handleStartRead, 1);
     }
 });
+
 // If you move the mouse while C/c is held, make sure to restart logic accordingly
 document.body.addEventListener('mousemove', (event) => {
     // If C/c is held but you rapidly move across elements
@@ -92,8 +89,6 @@ document.body.addEventListener('mouseout', (event) => {
     lastReadElement = null;
     currentHoveredElement = null;
 });
-
-
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'toggleReadAloud') {
