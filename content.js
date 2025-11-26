@@ -13,7 +13,6 @@ chrome.storage.onChanged.addListener((changes, area) => {
     }
 });
 
-let cHeld = false;
 let hoverTimeout = null;
 let lastReadElement = null;
 let currentHoveredElement = null;
@@ -28,60 +27,33 @@ function speak(text) {
     window.speechSynthesis.speak(utter);
 }
 
-function isTextElement(el) {
-    const skipTags = ['SCRIPT', 'STYLE', 'IMG', 'SVG'];
-    if (!el || skipTags.includes(el.tagName)) return false;
-    return true;
+function isReadableTextElement(el) {
+    const readableTags = ['P', 'A', 'BUTTON', 'SPAN', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'LI', 'LABEL', 'STRONG', 'EM', 'FIGCAPTION', 'B', 'I', 'TIME'];
+    return readableTags.includes(el.tagName);
 }
 
 function handleStartRead() {
-    if (!readAloudEnabled || !cHeld || !currentHoveredElement) return;
+    if (!readAloudEnabled || !currentHoveredElement) return;
     const text = currentHoveredElement.textContent.trim();
     lastReadElement = currentHoveredElement;
     speak(text);
 }
 
-document.addEventListener('keydown', (event) => {
-    if (event.key.toLowerCase() === 'c' && !cHeld) {
-        cHeld = true;
-        // If already hovering an element, start timer
-        if (currentHoveredElement && isTextElement(currentHoveredElement)) {
-            clearTimeout(hoverTimeout);
-            hoverTimeout = setTimeout(handleStartRead, 1);
-        }
-    }
-});
-
-document.addEventListener('keyup', (event) => {
-    if (event.key.toLowerCase() === 'c') {
-        cHeld = false;
-        clearTimeout(hoverTimeout);
-        window.speechSynthesis.cancel();
-        lastReadElement = null;
-    }
-});
-
 document.body.addEventListener('mouseover', (event) => {
     let el = event.target;
-    if (!isTextElement(el)) return;
+    if (!isReadableTextElement(el)) return;
     let text = el.textContent.trim();
+    if (!text) return;
 
     currentHoveredElement = el;
     clearTimeout(hoverTimeout);
 
-    // Only act if C/c is currently held and not already reading this element
-    if (cHeld && el !== lastReadElement) {
+    // Start read timer when hovering for 2 seconds
+    if (el !== lastReadElement) {
         hoverTimeout = setTimeout(handleStartRead, 1);
     }
 });
 
-// If you move the mouse while C/c is held, make sure to restart logic accordingly
-document.body.addEventListener('mousemove', (event) => {
-    // If C/c is held but you rapidly move across elements
-    // Forces mouseover/mouseout sequence most of the time, but can help with edge cases
-    if (!cHeld) return;
-    // No action needed here if mouseover/mouseout are firing appropriately
-});
 
 document.body.addEventListener('mouseout', (event) => {
     clearTimeout(hoverTimeout);
