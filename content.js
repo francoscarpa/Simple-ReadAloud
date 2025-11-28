@@ -32,6 +32,16 @@ function isReadableTextElement(el) {
     return readableTags.includes(el.tagName);
 }
 
+function findTopmostReadableAncestor(startEl) {
+    let el = startEl;
+    let topmost = null;
+    while (el && el.nodeType === Node.ELEMENT_NODE) {
+        if (isReadableTextElement(el)) topmost = el;
+        el = el.parentElement;
+    }
+    return topmost;
+}
+
 function handleStartRead() {
     if (!readAloudEnabled || !currentHoveredElement) return;
     const text = currentHoveredElement.textContent.trim();
@@ -41,11 +51,13 @@ function handleStartRead() {
 
 document.body.addEventListener('mouseover', (event) => {
     let el = event.target;
-    if (!isReadableTextElement(el)) return;
-    let text = el.textContent.trim();
+    // Find the outermost readable-tag ancestor (so inner tags bubble up to their readable container)
+    const readable = findTopmostReadableAncestor(el);
+    if (!readable) return;
+    let text = readable.textContent.trim();
     if (!text) return;
 
-    currentHoveredElement = el;
+    currentHoveredElement = readable;
     clearTimeout(hoverTimeout);
 
     // Start read timer when hovering for 2 seconds
