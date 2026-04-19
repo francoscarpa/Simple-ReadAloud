@@ -16,7 +16,7 @@ chrome.storage.onChanged.addListener((changes, area) => {
 let hoverTimeout = null;
 let lastReadElement = null;
 let currentHoveredElement = null;
-let readAloudEnabled = false;
+let readAloudEnabled = true;
 
 function speak(text) {
     window.speechSynthesis.cancel();
