@@ -24,6 +24,8 @@
             width: 100%;
             padding: 6px;
             cursor: pointer;
+            border: 1px solid #000;
+            outline: none;
         }
 
         input[type=range] {
@@ -33,6 +35,18 @@
         #language {
             margin-top: 6px;
             margin-bottom: 20px;
+        }
+
+        .checkboxLabel {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .checkboxLabel input {
+            width: auto;
+            margin: 0;
         }
     </style>
 </head>
@@ -48,6 +62,10 @@
     <label>
         Speed: <span id="speedValue">1</span>x
         <input type="range" min="0.5" max="3" step="0.1" id="speed" value="2.4">
+    </label>
+    <label class="checkboxLabel">
+        <input type="checkbox" id="hoverInfoEnabled">
+        Show hover info box
     </label>
     <button id="saveBtn">Save</button>
     <button id="toggleReadAloudBtn">Toggle Read Aloud</button>
