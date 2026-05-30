@@ -23,6 +23,7 @@ chrome.storage.onChanged.addListener((changes, area) => {
 let hoverTimeout = null;
 let lastReadElement = null;
 let currentHoveredElement = null;
+let currentHoverInfoElement = null;
 let readAloudEnabled = false;
 let hoverInfoBox = null;
 
@@ -75,15 +76,21 @@ function ensureHoverInfoBox() {
     return hoverInfoBox;
 }
 
+function shouldShowHoverInfoBox() {
+    return hoverInfoEnabled && readAloudEnabled && !!currentHoverInfoElement;
+}
+
 function syncHoverInfoBoxVisibility() {
     const infoBox = ensureHoverInfoBox();
-    infoBox.style.display = hoverInfoEnabled ? 'block' : 'none';
+    infoBox.style.display = shouldShowHoverInfoBox() ? 'block' : 'none';
 }
 
 function updateHoverInfoBox(el) {
-    if (!hoverInfoEnabled) return;
+    currentHoverInfoElement = el && el.nodeType === Node.ELEMENT_NODE ? el : null;
+    syncHoverInfoBoxVisibility();
+    if (!shouldShowHoverInfoBox()) return;
     const infoBox = ensureHoverInfoBox();
-    infoBox.innerHTML = `H: ${getElementLabel(el)}<br>${buildParentInfo(el)}`;
+    infoBox.innerHTML = `H: ${getElementLabel(currentHoverInfoElement)}<br>${buildParentInfo(currentHoverInfoElement)}`;
 }
 
 function speak(text) {
@@ -164,6 +171,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         if (!readAloudEnabled) {
             window.speechSynthesis.cancel();
         }
+        syncHoverInfoBoxVisibility();
         sendResponse && sendResponse({ enabled: readAloudEnabled });
     } else if (request.action === 'getReadAloudState') {
         sendResponse && sendResponse({ enabled: readAloudEnabled });

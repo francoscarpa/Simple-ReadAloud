@@ -15,11 +15,15 @@ function updateHoverInfoToggle(enabled) {
     document.getElementById('hoverInfoEnabled').checked = enabled;
 }
 
+function setSpeedValue(value) {
+    document.getElementById('speed').value = value;
+    document.getElementById('speedValue').textContent = value;
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     let { language, rate, hoverInfoEnabled } = await chrome.storage.local.get({ language: 'it-IT', rate: 2.4, hoverInfoEnabled: false });
     document.getElementById('language').value = language;
-    document.getElementById('speed').value = rate;
-    document.getElementById('speedValue').textContent = rate;
+    setSpeedValue(rate);
     updateHoverInfoToggle(hoverInfoEnabled);
     // Query current tab for read aloud state
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
@@ -29,7 +33,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     document.getElementById('speed').addEventListener('input', function () {
-        document.getElementById('speedValue').textContent = this.value;
+        setSpeedValue(this.value);
+    });
+
+    document.querySelectorAll('.speedPresetBtn').forEach((button) => {
+        button.addEventListener('click', function () {
+            setSpeedValue(this.dataset.speed);
+        });
     });
 
     document.getElementById('hoverInfoEnabled').addEventListener('change', async function () {

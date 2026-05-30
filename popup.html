@@ -48,6 +48,19 @@
             width: auto;
             margin: 0;
         }
+
+        .speedPresets {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+            margin-bottom: 8px;
+        }
+
+        .speedPresetBtn {
+            margin-top: 0;
+            flex: 1;
+            padding: 4px 0;
+        }
     </style>
 </head>
 
@@ -61,6 +74,11 @@
     </label>
     <label>
         Speed: <span id="speedValue">1</span>x
+        <div class="speedPresets">
+            <button type="button" class="speedPresetBtn" data-speed="1.5">1.5</button>
+            <button type="button" class="speedPresetBtn" data-speed="2">2</button>
+            <button type="button" class="speedPresetBtn" data-speed="2.5">2.5</button>
+        </div>
         <input type="range" min="0.5" max="3" step="0.1" id="speed" value="2.4">
     </label>
     <label class="checkboxLabel">
