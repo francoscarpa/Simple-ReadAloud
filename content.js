@@ -64,7 +64,7 @@ function ensureHoverInfoBox() {
     hoverInfoBox.style.borderRadius = '6px';
     hoverInfoBox.style.backgroundColor = 'rgba(17, 24, 39, 0.92)';
     hoverInfoBox.style.color = '#f9fafb';
-    hoverInfoBox.style.fontFamily = 'Verdana, sans-serif';
+    hoverInfoBox.style.fontFamily = 'SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace';
     hoverInfoBox.style.fontSize = '12px';
     hoverInfoBox.style.lineHeight = '1.25';
     hoverInfoBox.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.22)';
