@@ -99,6 +99,7 @@ function speak(text) {
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = language;
     utter.rate = rate;
+    utter.pitch = 0.5;
     window.speechSynthesis.speak(utter);
 }
 
