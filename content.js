@@ -92,6 +92,7 @@ function speak(text) {
     window.speechSynthesis.cancel();
     if (!text) return;
     const utter = new SpeechSynthesisUtterance(text);
+    utter.voice = window.speechSynthesis.getVoices().find(v => v.name === "Luca");
     utter.lang = language;
     utter.rate = rate;
     utter.pitch = 0.5;
