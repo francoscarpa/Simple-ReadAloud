@@ -27,22 +27,37 @@ function getElementLabel(el) {
     return el.tagName.toLowerCase();
 }
 
-function buildParentInfo(el, maxParents = 5) {
-    const parts = [];
+function buildElementPyramid(el, maxParents = 5) {
+    const rows = [{ prefix: 'H:', name: getElementLabel(el) }];
     let parent = el ? el.parentElement : null;
     let level = 1;
 
     while (parent && level <= maxParents) {
-        parts.push(`P${level}: ${getElementLabel(parent)}`);
+        rows.push({ prefix: `P${level}:`, name: getElementLabel(parent) });
         parent = parent.parentElement;
         level += 1;
     }
 
-    if (parts.length === 0) {
-        parts.push('P1: None');
+    if (rows.length === 1) {
+        rows.push({ prefix: 'P1:', name: 'None' });
     }
 
-    return parts.join('<br>');
+    return rows.map((row, index) => {
+        const sidePadding = 8 + (index * 7);
+
+        return `
+            <div style="
+                align-self: center;
+                box-sizing: border-box;
+                min-width: ${72 + (index * 22)}px;
+                padding: 3px ${sidePadding}px;
+                text-align: center;
+                background: ${index === 0 ? 'rgba(31, 122, 109, 0.95)' : 'rgba(255, 250, 241, 0.12)'};
+                border: 1px solid ${index === 0 ? 'rgba(248, 251, 249, 0.55)' : 'rgba(255, 250, 241, 0.18)'};
+                border-radius: 4px;
+            ">${row.prefix} <strong>${row.name}</strong></div>
+        `;
+    }).join('');
 }
 
 function ensureHoverInfoBox() {
@@ -64,8 +79,11 @@ function ensureHoverInfoBox() {
     hoverInfoBox.style.lineHeight = '1.25';
     hoverInfoBox.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.22)';
     hoverInfoBox.style.pointerEvents = 'none';
-    hoverInfoBox.style.minWidth = '140px';
-    hoverInfoBox.style.maxWidth = '220px';
+    hoverInfoBox.style.minWidth = '180px';
+    hoverInfoBox.style.maxWidth = '300px';
+    hoverInfoBox.style.flexDirection = 'column';
+    hoverInfoBox.style.alignItems = 'center';
+    hoverInfoBox.style.gap = '4px';
     document.body.appendChild(hoverInfoBox);
 
     return hoverInfoBox;
@@ -77,7 +95,7 @@ function shouldShowHoverInfoBox() {
 
 function syncHoverInfoBoxVisibility() {
     const infoBox = ensureHoverInfoBox();
-    infoBox.style.display = shouldShowHoverInfoBox() ? 'block' : 'none';
+    infoBox.style.display = shouldShowHoverInfoBox() ? 'flex' : 'none';
 }
 
 function updateHoverInfoBox(el) {
@@ -85,7 +103,7 @@ function updateHoverInfoBox(el) {
     syncHoverInfoBoxVisibility();
     if (!shouldShowHoverInfoBox()) return;
     const infoBox = ensureHoverInfoBox();
-    infoBox.innerHTML = `H: ${getElementLabel(currentHoverInfoElement)}<br>${buildParentInfo(currentHoverInfoElement)}`;
+    infoBox.innerHTML = buildElementPyramid(currentHoverInfoElement);
 }
 
 function speak(text) {
