@@ -7,16 +7,19 @@
             font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
             width: 220px;
             margin: 12px;
+            background: #eadfc9;
+            color: #202124;
         }
 
         label {
             display: block;
             margin-top: 10px;
+            color: #3a3d41;
         }
 
-        select,
         input[type=range] {
             width: 100%;
+            accent-color: #1f7a6d;
         }
 
         button {
@@ -24,17 +27,95 @@
             width: 100%;
             padding: 6px;
             cursor: pointer;
-            border: 1px solid #000;
+            color: #f8fbf9;
+            background: #1f7a6d;
+            border: 1px solid #15594f;
+            border-radius: 6px;
             outline: none;
+        }
+
+        button:hover {
+            background: #17665b;
+            border-color: #0f4e45;
         }
 
         input[type=range] {
             cursor: pointer;
         }
 
+        input[type=checkbox] {
+            accent-color: #1f7a6d;
+        }
+
+        #speedValue {
+            color: #0f665b;
+        }
+
         #language {
+            display: none;
+        }
+
+        .languageSelect {
+            position: relative;
             margin-top: 6px;
             margin-bottom: 20px;
+        }
+
+        .languageTrigger {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 0;
+            box-sizing: border-box;
+            color: #202124;
+            background: #fffaf1;
+            border-color: #b6a889;
+        }
+
+        .languageTrigger:hover,
+        .languageSelect.open .languageTrigger {
+            color: #102f2a;
+            background: #f8eed9;
+            border-color: #1f7a6d;
+        }
+
+        .languageChevron {
+            width: 7px;
+            height: 7px;
+            border-right: 2px solid #1f7a6d;
+            border-bottom: 2px solid #1f7a6d;
+            transform: rotate(45deg);
+        }
+
+        .languageMenu {
+            display: none;
+            position: absolute;
+            z-index: 2;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: #fffaf1;
+            border: 1px solid #b6a889;
+            border-radius: 6px;
+            box-shadow: 0 8px 18px rgba(55, 43, 22, 0.18);
+            overflow: hidden;
+        }
+
+        .languageSelect.open .languageMenu {
+            display: block;
+        }
+
+        .languageOption {
+            padding: 7px 8px;
+            color: #202124;
+            background: #fffaf1;
+            cursor: pointer;
+        }
+
+        .languageOption:hover,
+        .languageOption.selected {
+            color: #f8fbf9;
+            background: #1f7a6d;
         }
 
         .checkboxLabel {
@@ -60,6 +141,14 @@
             margin-top: 0;
             flex: 1;
             padding: 4px 0;
+            color: #15594f;
+            background: #e4f0ec;
+            border-color: #9fc7bd;
+        }
+
+        .speedPresetBtn:hover {
+            background: #d1e6df;
+            border-color: #76afa2;
         }
     </style>
 </head>
@@ -71,6 +160,16 @@
             <option value="en-US">English</option>
             <option value="it-IT">Italian</option>
         </select>
+        <div class="languageSelect" id="languageSelect">
+            <button type="button" class="languageTrigger" id="languageTrigger" aria-haspopup="listbox" aria-expanded="false">
+                <span id="languageText">Italian</span>
+                <span class="languageChevron"></span>
+            </button>
+            <div class="languageMenu" id="languageMenu" role="listbox">
+                <div class="languageOption" role="option" data-language="en-US">English</div>
+                <div class="languageOption" role="option" data-language="it-IT">Italian</div>
+            </div>
+        </div>
     </label>
     <label>
         Speed: <span id="speedValue">1</span>x
@@ -86,8 +185,8 @@
         <input type="checkbox" id="hoverInfoEnabled" checked>
         Show hover info box
     </label>
-    <button id="saveBtn">Save</button>
     <button id="toggleReadAloudBtn">Toggle Read Aloud</button>
+    <button id="saveBtn">Save</button>
     <script src="popup.js"></script>
 </body>
 
