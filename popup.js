@@ -21,10 +21,10 @@ function setSpeedValue(value) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    let { language, rate, hoverInfoEnabled } = await chrome.storage.local.get({ language: 'it-IT', rate: 2.4, hoverInfoEnabled: false });
+    let { language, rate } = await chrome.storage.local.get({ language: 'it-IT', rate: 2.4 });
     document.getElementById('language').value = language;
     setSpeedValue(rate);
-    updateHoverInfoToggle(hoverInfoEnabled);
+    updateHoverInfoToggle(true);
     // Query current tab for read aloud state
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         chrome.tabs.sendMessage(tabs[0].id, { action: 'getReadAloudState' }, function (response) {
@@ -42,8 +42,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    document.getElementById('hoverInfoEnabled').addEventListener('change', async function () {
-        await chrome.storage.local.set({ hoverInfoEnabled: this.checked });
+    document.getElementById('hoverInfoEnabled').addEventListener('change', function () {
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            chrome.tabs.sendMessage(tabs[0].id, { action: 'setHoverInfoEnabled', enabled: document.getElementById('hoverInfoEnabled').checked });
+        });
     });
 
     document.getElementById('saveBtn').addEventListener('click', async () => {

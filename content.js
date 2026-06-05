@@ -2,10 +2,9 @@ let language = 'it-IT';
 let rate = 2.4;
 let hoverInfoEnabled = true;
 
-chrome.storage.local.get({ language: 'it-IT', rate: 2.4, hoverInfoEnabled: false }, (data) => {
+chrome.storage.local.get({ language: 'it-IT', rate: 2.4 }, (data) => {
     language = data.language;
     rate = data.rate;
-    hoverInfoEnabled = data.hoverInfoEnabled;
     syncHoverInfoBoxVisibility();
 });
 
@@ -13,10 +12,6 @@ chrome.storage.onChanged.addListener((changes, area) => {
     if (area === 'local') {
         if (changes.language) language = changes.language.newValue;
         if (changes.rate) rate = changes.rate.newValue;
-        if (changes.hoverInfoEnabled) {
-            hoverInfoEnabled = changes.hoverInfoEnabled.newValue;
-            syncHoverInfoBoxVisibility();
-        }
     }
 });
 
@@ -215,5 +210,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse && sendResponse({ enabled: readAloudEnabled });
     } else if (request.action === 'getReadAloudState') {
         sendResponse && sendResponse({ enabled: readAloudEnabled });
+    } else if (request.action === 'setHoverInfoEnabled') {
+        hoverInfoEnabled = request.enabled;
+        syncHoverInfoBoxVisibility();
     }
 });
