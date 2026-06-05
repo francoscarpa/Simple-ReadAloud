@@ -1,6 +1,6 @@
 let language = 'it-IT';
 let rate = 2.4;
-let hoverInfoEnabled = false;
+let hoverInfoEnabled = true;
 
 chrome.storage.local.get({ language: 'it-IT', rate: 2.4, hoverInfoEnabled: false }, (data) => {
     language = data.language;
@@ -108,15 +108,54 @@ function isReadableTextElement(el) {
     return readableTags.includes(el.tagName);
 }
 
+function isElementVisible(el) {
+    if (!el || el.nodeType !== Node.ELEMENT_NODE) return false;
+
+    // Check if element or any parent is hidden via display:none
+    if (el.offsetParent === null && el.style.display !== 'fixed') return false;
+
+    const style = getComputedStyle(el);
+
+    // Check visibility and opacity
+    if (style.visibility === 'hidden' || style.opacity === '0') return false;
+
+    // Check dimensions
+    const rect = el.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return false;
+
+    // Check if in viewport or has visible dimensions
+    if (rect.bottom < 0 || rect.top > window.innerHeight ||
+        rect.right < 0 || rect.left > window.innerWidth) return false;
+
+    return true;
+}
+
+function getVisibleText(el) {
+    if (!el || el.nodeType !== Node.ELEMENT_NODE) return '';
+
+    let text = '';
+    const childNodes = el.childNodes;
+
+    for (let node of childNodes) {
+        if (node.nodeType === Node.TEXT_NODE) {
+            text += node.textContent;
+        } else if (node.nodeType === Node.ELEMENT_NODE && isElementVisible(node)) {
+            text += getVisibleText(node);
+        }
+    }
+
+    return text;
+}
+
 function findTopmostReadableAncestor(startEl) {
-    if (!startEl || startEl.nodeType !== Node.ELEMENT_NODE || !isReadableTextElement(startEl)) {
+    if (!startEl || startEl.nodeType !== Node.ELEMENT_NODE || !isReadableTextElement(startEl) || !isElementVisible(startEl)) {
         return null;
     }
 
     let topmost = startEl;
     let parent = startEl.parentElement;
 
-    while (parent && isReadableTextElement(parent)) {
+    while (parent && isReadableTextElement(parent) && isElementVisible(parent)) {
         topmost = parent;
         parent = parent.parentElement;
     }
@@ -125,8 +164,8 @@ function findTopmostReadableAncestor(startEl) {
 }
 
 function handleStartRead() {
-    if (!readAloudEnabled || !currentHoveredElement) return;
-    const text = currentHoveredElement.textContent.trim();
+    if (!readAloudEnabled || !currentHoveredElement || !isElementVisible(currentHoveredElement)) return;
+    const text = getVisibleText(currentHoveredElement).trim();
     lastReadElement = currentHoveredElement;
     speak(text);
 }
@@ -138,7 +177,7 @@ document.body.addEventListener('mouseover', (event) => {
     // Find the outermost readable-tag ancestor (so inner tags bubble up to their readable container)
     const readable = findTopmostReadableAncestor(el);
     if (!readable) return;
-    let text = readable.textContent.trim();
+    let text = getVisibleText(readable).trim();
     if (!text) return;
 
     currentHoveredElement = readable;
