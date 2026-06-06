@@ -1,6 +1,6 @@
 let language = 'it-IT';
 let rate = 2.4;
-let hoverInfoEnabled = true;
+let hoverInfoEnabled = false;
 
 chrome.storage.local.get({ language: 'it-IT', rate: 2.4 }, (data) => {
     language = data.language;
