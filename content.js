@@ -23,8 +23,8 @@ let readAloudEnabled = false;
 let hoverInfoBox = null;
 
 function getElementLabel(el) {
-    if (!el || el.nodeType !== Node.ELEMENT_NODE) return 'None';
-    return el.tagName.toLowerCase();
+    if (!el || el.nodeType !== Node.ELEMENT_NODE) return 'NONE';
+    return el.tagName.toUpperCase();
 }
 
 function buildElementPyramid(el, maxParents = 5) {
@@ -39,18 +39,18 @@ function buildElementPyramid(el, maxParents = 5) {
     }
 
     if (rows.length === 1) {
-        rows.push({ prefix: 'P1:', name: 'None' });
+        rows.push({ prefix: 'P1:', name: 'NONE' });
     }
 
     return rows.map((row, index) => {
-        const sidePadding = 8 + (index * 7);
+        const sidePadding = 6 + (index * 5);
 
         return `
             <div style="
                 align-self: center;
                 box-sizing: border-box;
-                min-width: ${72 + (index * 22)}px;
-                padding: 3px ${sidePadding}px;
+                min-width: ${56 + (index * 16)}px;
+                padding: 2px ${sidePadding}px;
                 text-align: center;
                 background: ${index === 0 ? 'rgba(31, 122, 109, 0.95)' : 'rgba(255, 250, 241, 0.12)'};
                 border: 1px solid ${index === 0 ? 'rgba(248, 251, 249, 0.55)' : 'rgba(255, 250, 241, 0.18)'};
@@ -70,27 +70,28 @@ function ensureHoverInfoBox() {
     hoverInfoBox.style.top = '16px';
     hoverInfoBox.style.right = '16px';
     hoverInfoBox.style.zIndex = '2147483647';
-    hoverInfoBox.style.padding = '8px 10px';
+    hoverInfoBox.style.margin = '0';
+    hoverInfoBox.style.padding = '6px 8px';
     hoverInfoBox.style.borderRadius = '6px';
     hoverInfoBox.style.backgroundColor = 'rgba(17, 24, 39, 0.92)';
     hoverInfoBox.style.color = '#f9fafb';
     hoverInfoBox.style.fontFamily = 'SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace';
-    hoverInfoBox.style.fontSize = '12px';
-    hoverInfoBox.style.lineHeight = '1.25';
+    hoverInfoBox.style.fontSize = '10px';
+    hoverInfoBox.style.lineHeight = '1.15';
     hoverInfoBox.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.22)';
     hoverInfoBox.style.pointerEvents = 'none';
-    hoverInfoBox.style.minWidth = '180px';
-    hoverInfoBox.style.maxWidth = '300px';
+    hoverInfoBox.style.minWidth = '0';
+    hoverInfoBox.style.maxWidth = '220px';
     hoverInfoBox.style.flexDirection = 'column';
     hoverInfoBox.style.alignItems = 'center';
-    hoverInfoBox.style.gap = '4px';
+    hoverInfoBox.style.gap = '2px';
     document.body.appendChild(hoverInfoBox);
 
     return hoverInfoBox;
 }
 
 function shouldShowHoverInfoBox() {
-    return hoverInfoEnabled && readAloudEnabled && !!currentHoverInfoElement;
+    return hoverInfoEnabled && !!currentHoverInfoElement;
 }
 
 function syncHoverInfoBoxVisibility() {
@@ -227,10 +228,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         }
         syncHoverInfoBoxVisibility();
         sendResponse && sendResponse({ enabled: readAloudEnabled });
+    } else if (request.action === 'setReadAloudEnabled') {
+        readAloudEnabled = !!request.enabled;
+        if (!readAloudEnabled) {
+            window.speechSynthesis.cancel();
+        }
+        sendResponse && sendResponse({ enabled: readAloudEnabled });
     } else if (request.action === 'getReadAloudState') {
         sendResponse && sendResponse({ enabled: readAloudEnabled });
     } else if (request.action === 'setHoverInfoEnabled') {
         hoverInfoEnabled = request.enabled;
         syncHoverInfoBoxVisibility();
+        sendResponse && sendResponse({ enabled: hoverInfoEnabled });
+    } else if (request.action === 'getHoverInfoState') {
+        sendResponse && sendResponse({ enabled: hoverInfoEnabled });
     }
 });

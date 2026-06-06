@@ -1,18 +1,11 @@
 function updateToggleButton(enabled) {
-    const btn = document.getElementById('toggleReadAloudBtn');
-    if (enabled) {
-        btn.textContent = 'Read Aloud: ON';
-        btn.style.backgroundColor = '#1f7a6d';
-        btn.style.color = '#f8fbf9';
-    } else {
-        btn.textContent = 'Read Aloud: OFF';
-        btn.style.backgroundColor = '#9f3f37';
-        btn.style.color = '#fff7f2';
-    }
+    document.getElementById('readAloudEnabled').checked = enabled;
+    document.getElementById('readAloudState').textContent = enabled ? 'ON' : 'OFF';
 }
 
 function updateHoverInfoToggle(enabled) {
     document.getElementById('hoverInfoEnabled').checked = enabled;
+    document.getElementById('hoverInfoState').textContent = enabled ? 'ON' : 'OFF';
 }
 
 function setSpeedValue(value) {
@@ -42,11 +35,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     let { language, rate } = await chrome.storage.local.get({ language: 'it-IT', rate: 2.4 });
     setLanguageValue(language);
     setSpeedValue(rate);
-    updateHoverInfoToggle(true);
-    // Query current tab for read aloud state
+    // Query current tab for feature states
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         chrome.tabs.sendMessage(tabs[0].id, { action: 'getReadAloudState' }, function (response) {
             updateToggleButton(response && response.enabled);
+        });
+        chrome.tabs.sendMessage(tabs[0].id, { action: 'getHoverInfoState' }, function (response) {
+            updateHoverInfoToggle(!response || response.enabled);
         });
     });
 
@@ -84,8 +79,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     document.getElementById('hoverInfoEnabled').addEventListener('change', function () {
+        const enabled = this.checked;
+        updateHoverInfoToggle(enabled);
         chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-            chrome.tabs.sendMessage(tabs[0].id, { action: 'setHoverInfoEnabled', enabled: document.getElementById('hoverInfoEnabled').checked });
+            chrome.tabs.sendMessage(tabs[0].id, { action: 'setHoverInfoEnabled', enabled });
         });
     });
 
@@ -96,9 +93,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.close();
     });
 
-    document.getElementById('toggleReadAloudBtn').addEventListener('click', () => {
+    document.getElementById('readAloudEnabled').addEventListener('change', function () {
+        const enabled = this.checked;
+        updateToggleButton(enabled);
         chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-            chrome.tabs.sendMessage(tabs[0].id, { action: 'toggleReadAloud' }, function (response) {
+            chrome.tabs.sendMessage(tabs[0].id, { action: 'setReadAloudEnabled', enabled }, function (response) {
                 updateToggleButton(response && response.enabled);
             });
         });
