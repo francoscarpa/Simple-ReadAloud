@@ -71,9 +71,9 @@ function ensureHoverInfoBox() {
     hoverInfoBox.style.right = '16px';
     hoverInfoBox.style.zIndex = '2147483647';
     hoverInfoBox.style.margin = '0';
-    hoverInfoBox.style.padding = '6px 8px';
+    hoverInfoBox.style.padding = '12px';
     hoverInfoBox.style.borderRadius = '6px';
-    hoverInfoBox.style.backgroundColor = 'rgba(17, 24, 39, 0.92)';
+    hoverInfoBox.style.backgroundColor = '#000';
     hoverInfoBox.style.color = '#f9fafb';
     hoverInfoBox.style.fontFamily = 'SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace';
     hoverInfoBox.style.fontSize = '10px';
