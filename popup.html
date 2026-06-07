@@ -192,7 +192,7 @@
             border-radius: 999px;
             background: #c7bca5;
             box-shadow: inset 0 0 0 1px rgba(32, 33, 36, 0.12);
-            transition: background 140ms ease, box-shadow 140ms ease;
+            transition: background, box-shadow;
         }
 
         .switchTrack::after {
@@ -205,19 +205,19 @@
             border-radius: 50%;
             background: #fffaf1;
             box-shadow: 0 2px 4px rgba(32, 33, 36, 0.24);
-            transition: transform 140ms ease;
+            transition: transform;
         }
 
-        .switchLabel input:checked + .switchTrack {
+        .switchLabel input:checked+.switchTrack {
             background: #1f7a6d;
             box-shadow: inset 0 0 0 1px #15594f;
         }
 
-        .switchLabel input:checked + .switchTrack::after {
+        .switchLabel input:checked+.switchTrack::after {
             transform: translateX(20px);
         }
 
-        .switchLabel input:focus-visible + .switchTrack {
+        .switchLabel input:focus-visible+.switchTrack {
             outline: 2px solid #0f665b;
             outline-offset: 2px;
         }
