@@ -55,7 +55,7 @@ function buildElementPyramid(el, maxParents = 5) {
                 background: ${index === 0 ? 'rgba(31, 122, 109, 0.95)' : 'rgba(255, 250, 241, 0.12)'};
                 border: 1px solid ${index === 0 ? 'rgba(248, 251, 249, 0.55)' : 'rgba(255, 250, 241, 0.18)'};
                 border-radius: 4px;
-            ">${row.prefix} <strong>${row.name}</strong></div>
+            "><strong>${row.name}</strong></div>
         `;
     }).join('');
 }
@@ -73,7 +73,8 @@ function ensureHoverInfoBox() {
     hoverInfoBox.style.margin = '0';
     hoverInfoBox.style.padding = '12px';
     hoverInfoBox.style.borderRadius = '6px';
-    hoverInfoBox.style.backgroundColor = '#000';
+    hoverInfoBox.style.backgroundColor = '#1a1a1a';
+    hoverInfoBox.style.border = '2px solid #1f7a6d';
     hoverInfoBox.style.color = '#f9fafb';
     hoverInfoBox.style.fontFamily = 'SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace';
     hoverInfoBox.style.fontSize = '10px';
