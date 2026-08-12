@@ -1,6 +1,12 @@
+let readAloudEnabled = false;
+let hoverInfoEnabled = false;
 let language = 'it-IT';
 let rate = 2.4;
-let hoverInfoEnabled = true;
+let hoverTimeout = null;
+let lastReadElement = null;
+let currentHoveredElement = null;
+let currentHoverInfoElement = null;
+let hoverInfoBox = null;
 
 chrome.storage.local.get({ language: 'it-IT', rate: 2.4 }, (data) => {
     language = data.language;
@@ -14,13 +20,6 @@ chrome.storage.onChanged.addListener((changes, area) => {
         if (changes.rate) rate = changes.rate.newValue;
     }
 });
-
-let hoverTimeout = null;
-let lastReadElement = null;
-let currentHoveredElement = null;
-let currentHoverInfoElement = null;
-let readAloudEnabled = false;
-let hoverInfoBox = null;
 
 function getElementLabel(el) {
     if (!el || el.nodeType !== Node.ELEMENT_NODE) return 'NONE';
